@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.XboxController.Button;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.subsystems.ColorWheelSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.IntakeArmSubsystem;
@@ -36,13 +37,15 @@ public class RobotContainer {
 
   // Controlling joystick for drive
   private final Joystick m_Joystick = new Joystick(0);
-
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
-
   private final DefaultDrive m_defaultDrive = new DefaultDrive(m_driveSubsystem,
     () -> m_Joystick.getY(), () -> m_Joystick.getX() );
 
+  // Intake System
   private final IntakeArmSubsystem m_intakeArmSubsystem = new IntakeArmSubsystem();
+
+  // ColorWheel Arm
+  private final ColorWheelSubsystem m_ColorWheelSubsystem = new ColorWheelSubsystem();
 
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
@@ -67,10 +70,21 @@ public class RobotContainer {
     new JoystickButton(m_Joystick, 5)
       .whenPressed(new InstantCommand(m_intakeArmSubsystem::raise, m_intakeArmSubsystem));
 
-   // Turn off the shooter when the 'B' button is pressed
+    // Turn off the shooter when the 'B' button is pressed
     new JoystickButton(m_Joystick, 3)
       .whenPressed(new InstantCommand(m_intakeArmSubsystem::lower, m_intakeArmSubsystem));
-  }
+
+    // Control ColorWheel arm
+    new JoystickButton(m_Joystick, 6)
+      .whenPressed(new InstantCommand(m_ColorWheelSubsystem::raise, m_ColorWheelSubsystem));
+
+    new JoystickButton(m_Joystick, 4)
+      .whenPressed(new InstantCommand(m_ColorWheelSubsystem::lower, m_ColorWheelSubsystem));
+
+    new JoystickButton(m_Joystick, 2)
+      .whenPressed( new InstantCommand(m_ColorWheelSubsystem::motorStart, m_ColorWheelSubsystem))
+      .whenReleased(new InstantCommand(m_ColorWheelSubsystem::motorStop, m_ColorWheelSubsystem));
+    }
 
 
   /**
