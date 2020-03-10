@@ -37,6 +37,13 @@ public class ColorWheelSubsystem extends SubsystemBase {
 
   public ColorWheelSubsystem() {
     setSolenoid(ColorWheelConstants.ArmDown);
+
+    // Load target colors into color matcher 
+    m_colorMatcher.addColorMatch(kBlueTarget);
+    m_colorMatcher.addColorMatch(kGreenTarget);
+    m_colorMatcher.addColorMatch(kRedTarget);
+    m_colorMatcher.addColorMatch(kYellowTarget);
+  
     }
 
   /**
@@ -51,27 +58,58 @@ public class ColorWheelSubsystem extends SubsystemBase {
    */
   public void raise() {
     setSolenoid(ColorWheelConstants.ArmUp);
-  
   }
+
   /**
    * lower arm
   */
   public void lower() {
     setSolenoid(ColorWheelConstants.ArmDown);
-  } 
-  private void setMotor(boolean value){
-    
-    m_colorMotor.set( value ? ColorWheelConstants.MotorSpeed : 0 );
+  }
 
+  private void setMotor(boolean value){
+    m_colorMotor.set( value ? ColorWheelConstants.MotorSpeed : 0 );
   }
+
   public void motorStart() {
-    setMotor(true);
-    
+    setMotor(true);    
   }
+
   public void motorStop(){
-    setMotor(false);
-    
+    setMotor(false);  
   }
+
+  /**
+   * Determine which color wheel is positioned at
+   */
+  private String checkColor {
+    Color detected = m_colorsensor.getColor();
+
+    ColorMatchResult match = m_colorMatcher.matchClosestColor( detected );
+    
+    SmartDashboard.putNumber("Red", detected.red);
+    SmartDashboard.putNumber("Green", detected.green);
+    SmartDashboard.putNumber("Blue", detected.blue);
+
+    SmartDashboard.putNumber("Proximity", m_colorsensor.getProximity());
+
+    String matched = "None";
+
+    if (match.confidence > 0.91) {
+      if (match.color == kBlueTarget) {
+        matched = "Blue";
+      } else if (match.color == kRedTarget) {
+        matched = "Red";
+      } else if (match.color == kGreenTarget) {
+        matched = "Green";
+      } else if (match.color == kYellowTarget) {
+        matched = "Yellow";
+      }
+    }
+
+    return matched;
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
