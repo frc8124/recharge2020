@@ -117,5 +117,7 @@ public class ColorWheelSubsystem extends SubsystemBase {
 
     SmartDashboard.putNumber("Color Wheel CURRENT AMPS", m_PDP.getCurrent(4) );
     SmartDashboard.putNumber("Total CURRENT AMPS", m_PDP.getTotalCurrent() );
+
+    SmartDashboard.putString("Color", checkColor() );
   }
 }
