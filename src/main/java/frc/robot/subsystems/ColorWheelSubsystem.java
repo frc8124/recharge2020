@@ -9,12 +9,15 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.revrobotics.ColorMatch;
+import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorSensorV3;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ColorWheelConstants;
 
@@ -30,6 +33,8 @@ public class ColorWheelSubsystem extends SubsystemBase {
 
   private final PowerDistributionPanel m_PDP = new PowerDistributionPanel();
 
+  private final DigitalInput m_WheelTouchSwitch = new DigitalInput(0);
+
   /** 
    * Creates a new ColorWheelSubsystem.
    */
@@ -39,10 +44,10 @@ public class ColorWheelSubsystem extends SubsystemBase {
     setSolenoid(ColorWheelConstants.ArmDown);
 
     // Load target colors into color matcher 
-    m_colorMatcher.addColorMatch(kBlueTarget);
-    m_colorMatcher.addColorMatch(kGreenTarget);
-    m_colorMatcher.addColorMatch(kRedTarget);
-    m_colorMatcher.addColorMatch(kYellowTarget);
+    m_colorMatcher.addColorMatch(ColorWheelConstants.kBlueTarget);
+    m_colorMatcher.addColorMatch(ColorWheelConstants.kGreenTarget);
+    m_colorMatcher.addColorMatch(ColorWheelConstants.kRedTarget);
+    m_colorMatcher.addColorMatch(ColorWheelConstants.kYellowTarget);
   
     }
 
@@ -82,7 +87,7 @@ public class ColorWheelSubsystem extends SubsystemBase {
   /**
    * Determine which color wheel is positioned at
    */
-  private String checkColor {
+  private String checkColor() {
     Color detected = m_colorsensor.getColor();
 
     ColorMatchResult match = m_colorMatcher.matchClosestColor( detected );
@@ -96,18 +101,22 @@ public class ColorWheelSubsystem extends SubsystemBase {
     String matched = "None";
 
     if (match.confidence > 0.91) {
-      if (match.color == kBlueTarget) {
+      if (match.color == ColorWheelConstants.kBlueTarget) {
         matched = "Blue";
-      } else if (match.color == kRedTarget) {
+      } else if (match.color == ColorWheelConstants.kRedTarget) {
         matched = "Red";
-      } else if (match.color == kGreenTarget) {
+      } else if (match.color == ColorWheelConstants.kGreenTarget) {
         matched = "Green";
-      } else if (match.color == kYellowTarget) {
+      } else if (match.color == ColorWheelConstants.kYellowTarget) {
         matched = "Yellow";
       }
     }
 
     return matched;
+  }
+
+  public boolean touchingWheel() {
+    return !m_WheelTouchSwitch.get();
   }
 
   @Override
@@ -119,5 +128,7 @@ public class ColorWheelSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Total CURRENT AMPS", m_PDP.getTotalCurrent() );
 
     SmartDashboard.putString("Color", checkColor() );
+
+    SmartDashboard.putBoolean("Touching", touchingWheel() );
   }
 }
