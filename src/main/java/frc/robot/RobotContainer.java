@@ -22,6 +22,9 @@ import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.IntakeArmSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
@@ -84,6 +87,33 @@ public class RobotContainer {
     new JoystickButton(m_Joystick, 2)
       .whenPressed( new InstantCommand(m_ColorWheelSubsystem::motorStart, m_ColorWheelSubsystem))
       .whenReleased(new InstantCommand(m_ColorWheelSubsystem::motorStop, m_ColorWheelSubsystem));
+    
+    new JoystickButton(m_Joystick, 10)
+      .toggleWhenPressed(
+
+        new SequentialCommandGroup(
+
+          new InstantCommand(m_ColorWheelSubsystem::raise, m_ColorWheelSubsystem),
+
+          new StartEndCommand( 
+           () -> { System.out.println("STARTING"); m_driveSubsystem.forward(.34); },
+           () -> { System.out.println("ENDING"); m_driveSubsystem.forward(0); },
+            m_driveSubsystem).withInterrupt( m_ColorWheelSubsystem::touchingWheel ),
+
+          new StartEndCommand(
+            m_ColorWheelSubsystem::motorStart,
+            m_ColorWheelSubsystem::motorStop,
+            m_ColorWheelSubsystem).withTimeout(5),
+
+            new StartEndCommand( 
+           () -> { System.out.println("STARTING"); m_driveSubsystem.forward(-.5); },
+           () -> { System.out.println("ENDING"); m_driveSubsystem.forward(0); },
+            m_driveSubsystem).withTimeout(1),
+        
+            new InstantCommand(m_ColorWheelSubsystem::lower, m_ColorWheelSubsystem)
+          )
+          
+      );
     }
 
 
