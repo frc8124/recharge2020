@@ -33,7 +33,7 @@ public class ColorWheelSubsystem extends SubsystemBase {
 
   private final PowerDistributionPanel m_PDP = new PowerDistributionPanel();
 
-  private final DigitalInput m_WheelTouchSwitch = new DigitalInput(0);
+  private final DigitalInput m_WheelTouchSwitch = new DigitalInput(ColorWheelConstants.ArmMicroSwitchPort);
 
   /** 
    * Creates a new ColorWheelSubsystem.

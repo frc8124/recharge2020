@@ -57,6 +57,6 @@ public final class Constants {
       public static final boolean ArmUp = true;
       public static final boolean ArmDown = false;
       public static final double MotorSpeed = 0.4;
-
+      public static final int ArmMicroSwitchPort = 0; 
     }
 }
